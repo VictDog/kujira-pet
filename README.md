@@ -69,8 +69,8 @@
 
 ### 1. 直接下载
 
-到 [Releases](../../releases) 下载最新的 `Kujira 桌宠.zip`（若还没有发布包，直接看下一节从源码构建），
-解压后把 `Kujira 桌宠.app` 拖进「应用程序」文件夹。
+到 [Releases](../../releases) 下载 `Kujira-<版本>-macOS-universal.zip`（约 93 MB，Apple Silicon 与 Intel 通用），
+解压后把 `Kujira 桌宠.app` 拖进「应用程序」文件夹。若还没有发布包，直接看下一节从源码构建。
 
 第一次打开会被 Gatekeeper 拦下（本地 ad-hoc 签名，没有 Apple 开发者证书）：
 
@@ -295,7 +295,7 @@ Resources/
   AppIcon.icns               图标
 
 characters-src/              做柴犬皮肤时的中间素材（立绘、生成用的原始 mp4）
-docs/                        README 用的 GIF
+docs/                        演示 GIF 与各版本的发布说明
 ```
 
 ## 常见问题

@@ -4,6 +4,7 @@ Kujira 桌宠.app/
 DSH桌宠.app/
 *.dmg
 *.zip
+dist/
 
 # 编译出来的工具二进制（源码在 Tools/*.swift）
 Tools/makechar
