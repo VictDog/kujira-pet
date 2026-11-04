@@ -92,6 +92,12 @@ xattr -dr com.apple.quarantine /Applications/Kujira 桌宠.app
 脚本会编译 arm64 与 x86_64 两个切片、`lipo` 成通用二进制、组装 App Bundle、ad-hoc 签名，
 最后产出 `Kujira 桌宠.app`（会打印体积和架构）。首次运行同样需要右键 → 打开。
 
+要发版就用打包脚本，它会把构建产物打成可直接拖进 Releases 的 zip，并打印 SHA-256：
+
+```bash
+./Tools/release.sh 1.1.0    # → dist/Kujira-1.1.0-macOS-universal.zip
+```
+
 启动后它会落在屏幕右下角，状态栏出现一个爪印图标——退出也从那里。
 
 ## 玩法
@@ -287,6 +293,7 @@ Tools/                       约 1400 行
   crop.swift                 裁边（去水印）
   genicon.swift              用一帧画面生成 App 图标
   mkgif.swift                本文档里的演示 GIF 就是它生成的
+  release.sh                 构建 + 打包成 Release 用的 zip，顺手打印 SHA-256
 
 Resources/
   characters/dsh/            内置皮肤：109 段透明动画（上游原素材）
