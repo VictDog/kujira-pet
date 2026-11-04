@@ -1,0 +1,80 @@
+{
+ "idle": [
+  "待机呼吸"
+ ],
+ "turn": [],
+ "drag": [
+  "拖拽-四肢悬空"
+ ],
+ "clicks": [
+  "点击回应-开心摇尾"
+ ],
+ "moves": {
+  "default": {
+   "minDist": 60,
+   "maxDist": 240,
+   "leadSec": 2,
+   "tailSec": 2
+  },
+  "actions": [
+   {
+    "name": "走路-原地小跑"
+   }
+  ]
+ },
+ "categories": [
+  {
+   "id": "反应",
+   "weight": 30,
+   "actions": [
+    "点击回应-开心摇尾"
+   ]
+  },
+  {
+   "id": "随机",
+   "weight": 20,
+   "actions": [
+    "玩耍-追尾巴转圈"
+   ]
+  }
+ ],
+ "sleep": {
+  "start": [
+   "睡觉-躺下"
+  ],
+  "loop": [
+   "睡觉-趴卧"
+  ],
+  "end": [
+   "睡觉-起身"
+  ]
+ },
+ "whisper": [],
+ "weights": {
+  "idle": 58,
+  "turn": 0,
+  "move": 8
+ },
+ "physics": {
+  "gravity": 1400,
+  "restitution": 0.78,
+  "groundFriction": 2.5,
+  "throwPower": 1.0
+ },
+ "refWidth": 462,
+ "sleepStartTexts": [
+  "困了……趴一会儿。",
+  "先眯一下。",
+  "睡个好觉。"
+ ],
+ "sleepEndTexts": [
+  "醒了！",
+  "睡饱了。",
+  "伸个懒腰……"
+ ],
+ "sleepRefuseTexts": [
+  "睡着了，别戳我。",
+  "呼……呼……",
+  "让我再睡会儿。"
+ ]
+}
