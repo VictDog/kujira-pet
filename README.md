@@ -70,7 +70,7 @@
 
 ### 1. 直接下载
 
-到 [Releases](../../releases) 下载 `Kujira-<版本>-macOS-universal.zip`（约 93 MB，Apple Silicon 与 Intel 通用），
+到 [Releases](../../releases) 下载 `Kujira-<版本>-macOS-universal.zip`（Apple Silicon 与 Intel 通用二进制），
 解压后把 `Kujira 桌宠.app` 拖进「应用程序」文件夹。若还没有发布包，直接看下一节从源码构建。
 
 第一次打开会被 Gatekeeper 拦下（本地 ad-hoc 签名，没有 Apple 开发者证书）：
