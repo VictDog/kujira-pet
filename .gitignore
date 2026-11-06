@@ -8,6 +8,7 @@ dist/
 
 # 编译出来的工具二进制（源码在 Tools/*.swift）
 Tools/makechar
+Tools/keyout
 
 # 本地工作目录（助手缓存与笔记，不入库）
 .workbuddy/
