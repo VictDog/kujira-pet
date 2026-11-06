@@ -1,0 +1,82 @@
+{
+  "idle": ["待机呼吸休闲"],
+  "turn": ["东张西望"],
+  "drag": ["被鼠标拖拽悬空反馈"],
+  "clicks": ["点击回应-害羞惊讶", "点击回应-挠痒咯咯笑"],
+  "moves": {
+    "default": { "minDist": 40, "maxDist": 140, "leadSec": 2, "tailSec": 2 },
+    "actions": [
+      { "name": "螃蟹走路" },
+      { "name": "原地漂浮踏步", "params": { "minDist": 30, "maxDist": 90 } }
+    ]
+  },
+  "categories": [
+    {
+      "id": "当没看见",
+      "weight": 62,
+      "actions": ["待机呼吸休闲", "东张西望", "摇头晃脑", "原地摇晃"]
+    },
+    {
+      "id": "自己待着",
+      "weight": 24,
+      "actions": ["伸懒腰", "打哈欠", "抖一抖", "探头看"]
+    },
+    {
+      "id": "难得失态",
+      "weight": 3,
+      "actions": ["蹦蹦跳", "转圈圈"]
+    }
+  ],
+  "sleep": {
+    "start": ["睡觉-开始"],
+    "loop": ["睡觉-循环"],
+    "end": ["睡觉-起来"]
+  },
+  "whisper": ["原地摇晃", "摇头晃脑"],
+  "weights": { "idle": 84, "turn": 3, "move": 2 },
+  "physics": {
+    "gravity": 1500,
+    "restitution": 0.55,
+    "groundFriction": 3.2,
+    "throwPower": 0.9
+  },
+  "refWidth": 462,
+  "sleepStartTexts": ["……困了。", "别吵，我自己睡。", "（找了个没人的角落）"],
+  "sleepEndTexts": ["……醒了。", "嗯。", "（装作刚醒）"],
+  "sleepRefuseTexts": ["……", "睡着了。别戳。", "（尾巴盖住耳朵）"],
+  "personality": {
+    "chatterLines": [
+      "……",
+      "别看我，看你的代码。",
+      "我在。不是在等你。",
+      "这个点还没睡？",
+      "桌面挺暖的。",
+      "别摸我。",
+      "你又来了。",
+      "今天的 bug 跟我没关系。",
+      "我可以一整天不动。",
+      "（耳朵动了一下）",
+      "你忙你的。",
+      "……嗯。"
+    ],
+    "chatterMinSec": 240,
+    "chatterMaxSec": 420,
+    "clickIgnoreRate": 0.8,
+    "ignoreActions": [
+      "待机呼吸休闲",
+      "待机呼吸休闲",
+      "东张西望",
+      "摇头晃脑"
+    ],
+    "ignoreTexts": ["……", "没空。", "嗯。", "别戳了。", "（假装没听见）"],
+    "pesterThreshold": 3,
+    "pesterWindowSec": 1.8,
+    "pesterActions": ["点击回应-傲娇生气", "抖一抖"],
+    "pesterTexts": [
+      "……再点一下试试。",
+      "你是真的烦。",
+      "行，我记住你了。",
+      "（尾巴甩得很用力）"
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 import AppKit
 import AVFoundation
+import QuartzCore
 
 /// 偏好持久化。
 enum Pref {
@@ -88,18 +89,12 @@ final class PetBrain: NSObject, PetViewDelegate {
     private var squash: Double = 1
     private var squashVel: Double = 0
 
-    // 碎碎念
+    // 碎碎念 / 点击性格
     private var chatterTimer: Timer?
     private var menuOpen = false
     private var clickSound: NSSound?
-
-    private let chatterLines = [
-        "写代码记得喝水哦～", "主人，眼睛累了吧？", "我在这儿陪着你呢。",
-        "摸鱼一时爽，一直摸鱼一直爽。", "要不要伸个懒腰？", "今天的 bug 会自己跑掉的。",
-        "我先替你看着桌面。", "唔……有点想吃小饼干。", "加油，快写完了！",
-        "坐久了站起来走两步吧。", "主人不理我，我就自己玩。", "灵感通常在站起来之后才来。",
-        "别熬夜呀。", "要不要喝杯咖啡？", "这个需求……真的不改了吗？"
-    ]
+    private var pesterCount = 0
+    private var lastClickAt: CFTimeInterval = 0
 
     override init() {
         let w = CGFloat(Pref.width)
@@ -493,8 +488,38 @@ final class PetBrain: NSObject, PetViewDelegate {
         if sleeping { wakeUp(); return }
         if mode == .sleepWake { return }
 
+        // 挤压和音效每次都给，这样「被无视」也有点击手感，不像点空了。
         squashImpulse(700)
         playClickSound()
+
+        // 连点戳太多次会炸毛；pesterThreshold 为 0 的角色包关闭这个行为。
+        let now = CACurrentMediaTime()
+        pesterCount = (now - lastClickAt <= catalog.pesterWindowSec) ? pesterCount + 1 : 1
+        lastClickAt = now
+        if catalog.pesterThreshold > 0, pesterCount >= catalog.pesterThreshold {
+            pesterCount = 0
+            let pool = catalog.pesterActions.isEmpty ? catalog.clicks : catalog.pesterActions
+            if let name = Pick.one(pool) {
+                mode = .action
+                stage.play(name, loop: false)
+            }
+            if let text = Pick.one(catalog.pesterTexts) { say(text, anim: false) }
+            return
+        }
+
+        // 概率无视：多半继续待机或东张西望，偶尔才甩一句。
+        if Double.random(in: 0..<1) < catalog.clickIgnoreRate {
+            let pool = catalog.ignoreActions.isEmpty ? catalog.idle : catalog.ignoreActions
+            if let name = Pick.one(pool) {
+                mode = .action
+                stage.play(name, loop: false)
+            }
+            if let text = Pick.one(catalog.ignoreTexts), Double.random(in: 0..<1) < 0.45 {
+                say(text, anim: false)
+            }
+            return
+        }
+
         guard let name = Pick.one(catalog.clicks) else { return }
         mode = .click
         stage.play(name, loop: false)
@@ -558,7 +583,7 @@ final class PetBrain: NSObject, PetViewDelegate {
 
     private func scheduleChatter() {
         chatterTimer?.invalidate()
-        let delay = Double.random(in: 150...300)
+        let delay = Double.random(in: catalog.chatterRange)
         let t = Timer(timeInterval: delay, repeats: false) { [weak self] _ in
             self?.chatter()
         }
@@ -569,7 +594,7 @@ final class PetBrain: NSObject, PetViewDelegate {
     private func chatter() {
         scheduleChatter()
         guard Pref.chatter, !sleeping, !dragging, flight == nil, walk == nil, mode != .sleepWake else { return }
-        say(chatterLines.randomElement() ?? "", anim: true)
+        say(catalog.chatterLines.randomElement() ?? "", anim: true)
     }
 
     func say(_ text: String, anim: Bool) {
