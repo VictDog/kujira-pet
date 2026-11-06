@@ -46,11 +46,11 @@
 
 | 项目 | 说明 |
 | --- | --- |
-| 形态 | 单独的 `Kujira 桌宠.app`，约 110 MB（其中 92 MB 是动画素材，剩下主要是双架构二进制） |
+| 形态 | 单独的 `Kujira 桌宠.app`，约 117 MB（其中 115 MB 是动画素材，二进制不到 1 MB） |
 | 依赖 | **零**。没有 Electron / Node / Python / 第三方 Swift 包 |
 | 系统 | macOS 13 Ventura 及以上，Apple Silicon 与 Intel 通用二进制 |
-| 代码 | `Sources/` 约 1600 行 Swift，`Tools/` 约 1400 行（皮肤工具链） |
-| 素材 | 内置 109 段 DSH 女仆动作 + 8 段柴犬动作，全部 30 fps、透明、循环无缝 |
+| 代码 | `Sources/` 约 1700 行 Swift，`Tools/` 约 1750 行（皮肤工具链） |
+| 素材 | 内置 3 套角色包：109 段 DSH 女仆 + 8 段柴犬 + 21 段高冷猫，全部 30 fps、透明、循环无缝 |
 
 它**不是**网页套壳。窗口是真的透明 `NSPanel`，视频是真的硬件解码，透明区域真的会把鼠标事件让给下面的应用。
 
@@ -60,7 +60,8 @@
 - **真·透明**：直接解 HEVC with alpha，不是绿幕 chroma key，也没有半透明黑底。角色头发丝和裙摆边缘都干净。
 - **不挡鼠标、不抢焦点**：只有角色身体那一小块吃点击，其余区域穿透；窗口是 `.nonactivatingPanel`，戳它不会打断你正在打的字。
 - **皮肤热插拔**：角色按「包」组织，右键就能换，**不用重新编译，也不用重启**。
-- **能自己造皮肤**：一段视频 / 一个 GIF 一条命令变成动作；只有一张立绘也能生成 21 段程序化动画。
+- **换的不只是皮**：台词、说话频率、点击被无视的概率、连点炸毛阈值、落地手感全在 `catalog.json` 里——同一套代码，既能是黏人的柴犬，也能是懒得理你的猫。
+- **能自己造皮肤**：一段视频 / 一个 GIF 一条命令变成动作；只有一张白底立绘也能一行命令生成 21 段程序化动画。
 - **有物理**：按住能拎起来挣扎，松手按甩动速度抛出去——重力下落、撞墙反弹、落地压扁回弹、地面摩擦减速。
 - **会睡觉**：入住睡过渡 → 睡姿循环 → 被叫醒的醒来过渡，完整三段；睡着时不理你，戳它会说「睡着了，别戳我」。
 - **不占 Dock**：`LSUIElement`，只在顶部状态栏留一个爪印，不想看见它就右键隐藏。
@@ -129,12 +130,24 @@ defaults delete local.dshpet.macos pet.x  # 位置存坏了就删掉，下次启
 | --- | --- | --- |
 | **DSH 小女仆** | 109 | 上游原素材：待机、五种点击回应、拖拽、三种走位、睡觉三段，外加小动作 / 玩耍 / 吃什么 / 时节 / 文字五个分类 |
 | **柴犬小柴** | 8 | 用视频生成的动作：待机呼吸、开心摇尾、躺下 / 趴卧 / 起身、四肢悬空、原地小跑、追尾巴转圈 |
+| **高冷猫** | 21 | 一张立绘生成的程序化动画；**80% 的点击会被无视**，连点三次才炸毛，84% 时间待机不动，偶尔突然蹦一下又装作没事 |
 
 <p align="center">
   <img src="docs/skins-shiba.gif" width="760" alt="柴犬皮肤：待机、被点击摇尾巴、原地小跑、追着自己尾巴转圈">
   <br>
   <sub>柴犬皮肤：动作来自视频生成，同样是 640×360 HEVC with alpha</sub>
 </p>
+
+<p align="center">
+  <img src="docs/skin-aloof-cat.gif" width="760" alt="高冷猫皮肤：待机、被点一下无视、连点炸毛、难得蹦一下、然后趴下睡">
+  <br>
+  <sub>高冷猫皮肤：点它多半没反应，连点三次才甩脸色</sub>
+</p>
+
+**高冷猫演示的是「皮肤可以带性格」。** 它的台词、说话间隔（240–420 秒，比默认更不爱开口）、
+80% 的点击忽略率、连点三次炸毛的阈值，以及更沉的落地手感（重力 1500 / 弹性 0.55），
+全部写在自己那一份 `catalog.json` 里。DSH 与柴犬不写这些字段，就继续用默认的暖心设定。
+字段说明见 [给皮肤配性格](#给皮肤配性格)。
 
 ## 自己做一套皮肤
 
@@ -143,7 +156,7 @@ defaults delete local.dshpet.macos pet.x  # 位置存坏了就删掉，下次启
 ```
 ~/Library/Application Support/DSH桌宠/characters/<包名>/
 ├── title.txt        # 菜单里显示的名字，一行字
-├── catalog.json     # 动作清单、权重、分类、物理参数
+├── catalog.json     # 动作清单、权重、分类、物理参数、角色性格（可选）
 └── animations/      # 640×360 HEVC with alpha 的 .mov，30 fps
 ```
 
@@ -210,13 +223,37 @@ swiftc -O Tools/makeclip.swift -o .build/makeclip
 ./Tools/new-character.sh ~/Downloads/cat.png cat "小猫"
 ```
 
-- 图带透明背景直接用；不透明也行，会用 Vision 的主体抠图把背景去掉
+- 图带透明背景直接用；**白底图会自动泛洪抠白**，连角落的浅色水印一起清掉（`Tools/keyout.swift`）
+- 绿幕 / 蓝幕先手动转一次：`swiftc -O Tools/keyout.swift -o .build/keyout && .build/keyout 绿幕.png 透明.png --mode green`
 - 自动裁到主体，按角色占位（高 290 px、脚底距底边 28 px）摆进 640×360
 - 生成 21 段、每段 10 秒、30 fps 的 `.mov`，并写好这个包自己的 `catalog.json`
 - 装到 `~/Library/Application Support/DSH桌宠/characters/<包名>/`，右键就能切
+- 想让脚本输出到别处（自检 / CI），设 `KUJIRA_DEST=/某个目录`
 
 程序化动画的上限是「整体位移、缩放、旋转、拉扯」：呼吸、蹦跳、摇晃、转圈、入眠都能做，
 挥手、吃东西这种肢体分层动作做不了——要那种效果还是走视频那条路。
+
+### 给皮肤配性格
+
+`catalog.json` 里有一个可选的 `personality` 对象，**不写就是默认的暖心设定**——
+所以早期的 DSH、柴犬两个包一个字都不用改。
+
+| 字段 | 作用 | 高冷猫取值 |
+| --- | --- | --- |
+| `chatterLines` | 日常碎碎念台词表 | 12 句，全是「……」「没空。」这种 |
+| `chatterMinSec` / `chatterMaxSec` | 说话间隔的随机区间（秒） | `240` / `420` |
+| `clickIgnoreRate` | 点击有多大概率被无视，`0~1` | `0.8` |
+| `ignoreActions` | 被无视时播的动作（可重复写来提高权重） | 待机 ×2、东张西望、摇头晃脑 |
+| `ignoreTexts` | 被无视时偶尔冒出的一句 | 「……」「别戳了。」 |
+| `pesterThreshold` / `pesterWindowSec` | 多少秒内连点几次会炸毛；`0` 关闭 | `3` / `1.8` |
+| `pesterActions` / `pesterTexts` | 炸毛时播的动作和台词 | 傲娇生气、抖一抖 |
+
+被无视时**挤压反馈和点击音效照常给**，手感上不会像点空了；只是动作继续待机、话也懒得说。
+配合 `weights.idle`（高冷猫是 84）和 `categories` 里一个高权重的「当没看见」分类，
+就能做出「绝大多数时候什么都不干，偶尔突然蹦一下又装作没事」的反差。
+
+物理手感同样按皮肤可调：`physics.gravity` / `restitution` / `groundFriction` / `throwPower`。
+高冷猫是 `1500 / 0.55 / 3.2 / 0.9`，落地更沉、不太弹，拎起来也更费劲。
 
 ### 已经踩过的坑（都写在代码注释里）
 
@@ -230,6 +267,8 @@ swiftc -O Tools/makeclip.swift -o .build/makeclip
 - **zsh 默认不做变量分词**：`FLAGS="--key auto --scale 0.4"; cmd $FLAGS` 会把整串当成一个参数，
   结果是**静默地不抠像**。脚本里一律显式传参。
 - **别一次开上百个 `AVURLAsset` 去读时长**，会把媒体 I/O 占满，首帧要等十几秒。真播过哪段再记哪段。
+- **`set -u` 下变量名别紧挨中文引号**：`echo "「$TITLE」"` 在非 UTF-8 locale 里会把全角引号的
+  首字节吞进变量名，报 `unbound variable`。写成 `「${TITLE}」`。
 
 ## 技术实现
 
@@ -276,7 +315,7 @@ flowchart LR
 ```
 Sources/                     约 1600 行
   main.swift                 入口，.accessory（不占 Dock）
-  Catalog.swift              读 catalog.json；加权抽取
+  Catalog.swift              读 catalog.json；加权抽取 + 角色性格（缺省回退）
   Assets.swift               角色包定位（内置 + 外置），时长按需记录
   AnimationStage.swift       A/B 双 AVPlayerLayer，首帧就绪后原子换面 + 挤压 / 镜像
   PetWindow.swift            无边框透明 NSPanel + 身体区域命中判定
@@ -284,7 +323,8 @@ Sources/                     约 1600 行
   Bubble.swift               头顶毛玻璃气泡
   PetMenu.swift              右键菜单 + 状态栏 + 开机自启
 
-Tools/                       约 1400 行
+Tools/                       约 1750 行
+  keyout.swift               纯色背景立绘 → 透明 PNG（泛洪，白底水印一起清）
   makechar.swift             一张图 → 21 段程序化动画包
   makeclip.swift             视频 / GIF / 帧序列 → 单段 HEVC-alpha（抠像 + 转码）
   add-clip.sh                给角色包加一段视频动作并自动更新 catalog
@@ -298,10 +338,11 @@ Tools/                       约 1400 行
 Resources/
   characters/dsh/            内置皮肤：109 段透明动画（上游原素材）
   characters/shiba/          内置皮肤：柴犬小柴，8 段
+  characters/aloof-cat/      内置皮肤：高冷猫，21 段 + 自己的性格配置
   click-duck.wav             点击音效
   AppIcon.icns               图标
 
-characters-src/              做柴犬皮肤时的中间素材（立绘、生成用的原始 mp4）
+characters-src/              做柴犬 / 高冷猫时的中间素材（立绘、生成用的原始 mp4）
 docs/                        演示 GIF 与各版本的发布说明
 ```
 
@@ -371,3 +412,5 @@ is ad-hoc signed, so right-click → Open the first time.
 Code is MIT. Animation assets and the character design are **non-commercial only** (CC BY-NC-SA 4.0) and must keep
 attribution to the original repository. Skins are hot-swappable data packages (`catalog.json` + `.mov` clips) —
 see [自己做一套皮肤](#自己做一套皮肤) for the toolchain that turns a video, a GIF, or a single illustration into one.
+Each skin can also define its own personality in `catalog.json` (dialogue, chatter frequency, click-ignore rate,
+physics) — the built-in aloof cat ignores 80% of your clicks.

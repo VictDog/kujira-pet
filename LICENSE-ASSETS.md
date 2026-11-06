@@ -11,8 +11,13 @@
 - 允许开源使用
 - **禁止商用**
 
-本项目内置的动画素材来自 [PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet)，
-`Resources/characters/dsh/` 下的 109 段视频未做修改，仅由 macOS 端解码播放。
+**上游素材**：`Resources/characters/dsh/` 下的 109 段视频来自
+[PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet)，未做修改，仅由 macOS 端解码播放。
+
+**本项目自制素材**：`Resources/characters/shiba/`（柴犬，8 段）、
+`Resources/characters/aloof-cat/`（高冷猫，21 段），以及 `characters-src/` 下对应的立绘、源视频
+和 `docs/` 里的演示 GIF，均由本项目用图像 / 视频生成模型制作。
+同样遵循「允许开源使用、禁止商用」，可随本仓库一起分发、修改与再创作。
 
 ## 2. 二次创作约定
 
@@ -26,6 +31,8 @@
 - 宠物形象为社区二创的 DeepSeek「大肥鱼」（鲸鱼娘），**非 DeepSeek 官方形象**
 - 原型「溟月」出自 B 站 **@上善无形**
 - DeepSeek 版（女仆鲸鱼娘）设计出自 B 站 **@ZipZipPipe**
+- **柴犬小柴**、**高冷猫**是本项目自制的独立形象，与上面的鲸鱼娘形象无关；
+  按本文件第 1 节的规则提供（开源可用、禁止商用），使用时请注明来自本仓库
 
 ## 4. 形象授权
 
